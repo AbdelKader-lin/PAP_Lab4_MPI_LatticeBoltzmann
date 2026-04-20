@@ -1,4 +1,4 @@
-#!/bin/bash
+git #!/bin/bash
 #######################################################
 #    AUTHOR  : Sébastien Valat                        #
 #    MAIL    : sebastien.valat@univ-grenoble-alpes.fr #
