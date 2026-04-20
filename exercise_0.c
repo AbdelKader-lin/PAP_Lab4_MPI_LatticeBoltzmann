@@ -20,17 +20,16 @@
 #include "src/exercises.h"
 
 /****************************************************/
-void lbm_comm_init_ex0(lbm_comm_t * comm, int total_width, int total_height)
-{
+void lbm_comm_init_ex0( lbm_comm_t * comm , int total_width , int total_height ) {
 	//get infos
-	int rank;
-	int comm_size;
-	MPI_Comm_rank( MPI_COMM_WORLD, &rank );
-	MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
+	int rank ;
+	int comm_size ;
+	MPI_Comm_rank( MPI_COMM_WORLD, &rank ) ;
+	MPI_Comm_size( MPI_COMM_WORLD, &comm_size ) ;
 
 	//check
-	if (comm_size != 1)
-		fatal("Invalid communicator size, should be 1 !");
+	if ( comm_size != 1 )
+		fatal( "Invalid communicator size, should be 1 !" ) ;
 
 	//comm splitting (just 1 process)
 	//nb_* defines the number of task on the given axis.
@@ -44,6 +43,7 @@ void lbm_comm_init_ex0(lbm_comm_t * comm, int total_width, int total_height)
 
 	//setup size (+2 for ghost cells on border)
 	//compute the size of the local mesh, accounting the 1 cell layer of ghost cells.
+	// The +2 on width and height is always there regardless of how many processes we have
 	comm->width = total_width + 2;
 	comm->height = total_height + 2;
 
@@ -59,29 +59,32 @@ void lbm_comm_init_ex0(lbm_comm_t * comm, int total_width, int total_height)
 }
 
 /****************************************************/
-void lbm_comm_release_ex0(lbm_comm_t * comm)
-{
+void lbm_comm_release_ex0( lbm_comm_t * comm ) {
 	//nothing to release
 }
 
 /****************************************************/
-void lbm_comm_ghost_exchange_ex0(lbm_comm_t * comm, lbm_mesh_t * mesh)
-{
-	//nothing to exchange (single process, no comms)
+void lbm_comm_ghost_exchange_ex0( lbm_comm_t * comm , lbm_mesh_t * mesh ) {
+	//nothing to exchange ( single process , no comms )
 }
 
 /****************************************************/
-void lbm_do_step_ex0(lbm_comm_t * comm, lbm_mesh_type_t * mesh_type, lbm_mesh_t * mesh, lbm_mesh_t * temp_mesh)
-{
+
+/*
+lbm_do_step_ex0() runs one time step of the simulation.
+The whole simulation is just this function 
+called thousands of times in a loop.
+*/
+void lbm_do_step_ex0( lbm_comm_t * comm , lbm_mesh_type_t * mesh_type , lbm_mesh_t * mesh , lbm_mesh_t * temp_mesh ) {
 	//compute special actions (border, obstacle...)
-	lbm_phys_special_cells( mesh, mesh_type, comm);
+	lbm_phys_special_cells( mesh , mesh_type , comm ) ; // Boundaries conditions
 
 	//compute lbm_phys_collision term
-	lbm_phys_collision( temp_mesh, mesh);
+	lbm_phys_collision( temp_mesh , mesh ) ;
 
 	//propagate values from node to neighboors
-	lbm_comm_ghost_exchange_ex_select( comm, temp_mesh );
+	lbm_comm_ghost_exchange_ex_select( comm , temp_mesh ) ;
 
 	//compute fuild displacement from cells to cells
-	lbm_phys_propagation( mesh, temp_mesh);
+	lbm_phys_propagation( mesh , temp_mesh ) ;
 }
