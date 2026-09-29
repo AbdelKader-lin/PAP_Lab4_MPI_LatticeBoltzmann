@@ -1,102 +1,102 @@
-Simu simple LBM (Lattice Boltzmann Method)
-==========================================
+# Parallel Lattice Boltzmann Fluid Simulation with MPI
 
-Introduction
-------------
+A C/MPI project exploring distributed-memory parallelization of the **Lattice Boltzmann Method (LBM)** for fluid simulation. The implementation progresses through several exercises and communication strategies, with tools for correctness checking, visualization and performance benchmarking.
 
-This project implement sthe Lattice Boltzmann Method for fluid simulation.
-It is used for teaching parallel MPI programming and was
-started in 2011 for a parallel optimization course at Versailles.
+## What this project demonstrates
 
-Compiling
----------
+- distributed-memory parallel programming with **MPI**
+- domain decomposition for a 2D numerical simulation
+- communication between neighboring MPI processes
+- handling of ghost cells / halo regions
+- correctness testing of communication patterns
+- performance benchmarking and weak-scaling experiments
+- scientific computing in C
 
-To compile the code  you need an MPI implementation (openmpi or mpich or ...) and a C compiler (gcc).
+## Project structure
 
-If you want to change the compile options you can edit the first lines of the 
-Makefile file.
+The repository contains a sequence of implementations from `exercise_0.c` onward. These exercises progressively introduce and refine the parallel MPI version of the simulation.
 
-To compile you just have to run :
+Supporting tools include:
 
-```sh
+- `check_comm` — isolates communication patterns to make halo/ghost-cell exchanges easier to inspect
+- `config.txt` — simulation configuration
+- `bench_correction.sh` — benchmarking support
+- `gen_animate_gif.sh` — generates an animated visualization of simulation output using gnuplot
+- `Makefile` — compilation and build configuration
+
+## Requirements
+
+You need:
+
+- a C compiler such as GCC
+- an MPI implementation such as OpenMPI or MPICH
+- `make`
+- optionally `gnuplot` for rendering simulation results
+
+## Build
+
+```bash
 make
 ```
 
-Running
--------
+## Run
 
-You can run the `lbm` executable with the `mpirun` command and select the exercise
-by using `-e {EXERCICE_ID}` option. By default it use the exercise 0 which only
-allow sequential run with a uniq process.
+Run the simulation with MPI and select an exercise using `--exercise` or `-e`:
 
-```sh
+```bash
 mpirun -np 8 ./lbm --exercise 1
-# Or
+```
+
+Equivalent short form:
+
+```bash
 mpirun -np 8 ./lbm -e 1
 ```
 
-For benchmarking you can disable the output:
+Exercise 0 is the sequential baseline and should be run with a single process.
 
-```sh
-mpirun -np 8 ./lbm --exercise 1 --no-out
-# Or
-mpirun -np 8 ./lbm -e 1 -n
-```
+A different configuration file can be supplied as an argument:
 
-You can edit the config file `config.txt` or use another file passed as
-parameter:
-
-```sh
+```bash
 mpirun -np 8 ./lbm -e 1 config-other.txt
 ```
 
-Test communication patterns
---------------------------
+## Communication debugging
 
-When developping the communication patterns you can more easily debug
-by using the `check_comm` executable which just reproduces the communication
-and displays the state in the terminal. The gray numbers are the ghost cells.
+The `check_comm` executable reproduces the MPI communication independently of the complete simulation, which makes it easier to inspect distributed subdomains and ghost cells.
 
-```sh
-mpirun -np 8 ./check_comm --exercise 1
-# Or
+```bash
 mpirun -np 8 ./check_comm -e 1
 ```
 
-Final rendering
----------------
+## Benchmarking
 
-After computing you can make the rendering to get an animated GIF by using the
-`gen_animate_gif.sh` script based on `gnuplot`.
+Output can be disabled when measuring execution time:
 
-```sh
+```bash
+mpirun -np 8 ./lbm -e 1 --no-out
+```
+
+The weak-scaling option increases the mesh size with the number of processes:
+
+```bash
+mpirun -np 8 ./lbm -e 6 --scale 8 --no-out
+```
+
+This allows the implementation to be evaluated as the amount of parallel work grows with the available MPI processes.
+
+## Visualization
+
+Simulation output can be converted to an animated GIF using the included gnuplot-based script:
+
+```bash
 ./gen_animate_gif.sh resultat.raw output.gif
 ```
 
-Benchmarking
-------------
+## Context
 
-You can enable the weak scaling option if you want to automatically grow the
-mesh for performance measurement by using the -s option which will grow the mesh
-size by the given factor (as close as possible to keep multiple for width
-& height).
+Parallel programming / high-performance computing lab focused on applying MPI to a numerical fluid simulation.
 
-```sh
-mpirun -np 8 ./lbm --exercise 6 --scale 8 --no-out
-# Or
-mpirun -np 8 ./lbm -e 6 -s 8 --n
-```
+## License
 
-Generate source archive
------------------------
-
-You can generate a source archive using:
-
-```sh
-make archive
-```
-
-License
--------
-
-This code is distributed under BSD license.
+The original teaching code is distributed under the BSD license.
