@@ -18,11 +18,11 @@ The repository contains a sequence of implementations from `exercise_0.c` onward
 
 Supporting tools include:
 
-- `check_comm` — isolates communication patterns to make halo/ghost-cell exchanges easier to inspect
-- `config.txt` — simulation configuration
-- `bench_correction.sh` — benchmarking support
-- `gen_animate_gif.sh` — generates an animated visualization of simulation output using gnuplot
-- `Makefile` — compilation and build configuration
+- `check_comm` - isolates communication patterns to make halo/ghost-cell exchanges easier to inspect
+- `config.txt` - simulation configuration
+- `bench_correction.sh` - benchmarking support
+- `gen_animate_gif.sh` - generates an animated visualization of simulation output using gnuplot
+- `Makefile` - compilation and build configuration
 
 ## Requirements
 
